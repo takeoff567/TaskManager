@@ -3,7 +3,7 @@ import storage from '../lib/storage';
 import { AuthCredentials, AuthResponse } from '../types';
 
 export const register = async (data: AuthCredentials): Promise<AuthResponse> => {
-  const response = await axiosClient.post<AuthResponse>('/auth/register', data);
+  const response = await axiosClient.post<AuthResponse>('/register', data);
 
   const { accessToken, refreshToken } = response.data;
 

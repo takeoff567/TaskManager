@@ -9,7 +9,7 @@ export default StyleSheet.create({
   },
   input: {
     height: 50,
-    borderRadius: 12,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: '#ddd',
     paddingHorizontal: 16,

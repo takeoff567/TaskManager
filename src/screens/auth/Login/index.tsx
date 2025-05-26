@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { Text, View, Alert, Image } from 'react-native';
+import { Text, View, Alert, Image, ScrollView } from 'react-native';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputField from '../../../components/InputField';
 import CustomButton from '../../../components/CustomButton';
@@ -29,9 +29,12 @@ const Login = (): JSX.Element => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.inContainer}>
         <Image source={require('../../../assets/logo.png')} style={styles.logo}/>
-        <Text style={[TEXT_VARIANTS.heading2, styles.heading]}>Welcome Back</Text>
+        <View style={styles.headingContainer}>
+          <Text style={[TEXT_VARIANTS.heading1, commonStyles.textCenter, styles.heading]}>Login here</Text>
+          <Text style={[TEXT_VARIANTS.heading2, commonStyles.textCenter, styles.subHeading]}>Welcome back, You've been missed</Text>
+        </View>
       <InputField
         containerStyle={styles.input}
         label="Email"
@@ -74,7 +77,7 @@ const Login = (): JSX.Element => {
         <Text style={TEXT_VARIANTS.small}>Not registered? </Text>
         <Text style={commonStyles.link} onPress={() => navigation.replace('Register')}>Register here</Text>
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

@@ -6,5 +6,8 @@ export const commonStyles = StyleSheet.create({
         color: COMMON_COLORS.BLUE_MID,
         textAlign: 'center',
         marginVertical: 15
+    },
+    textCenter: {
+        textAlign: 'center'
     }
 })

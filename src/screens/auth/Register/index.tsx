@@ -1,5 +1,5 @@
 import React, { JSX } from 'react';
-import { Text, View, Alert, Image } from 'react-native';
+import { Text, View, Alert, Image, ScrollView } from 'react-native';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputField from '../../../components/InputField';
 import CustomButton from '../../../components/CustomButton';
@@ -33,8 +33,8 @@ const Register = (): JSX.Element => {
   const onSubmit: SubmitHandler<RegisterForm> = async (data) => {
     console.log('Alert')
     if(data.confirmPassword !== data.password){
-        // Alert.alert('Confirm password and password must be same');
-        // return;
+        Alert.alert('Confirm password and password must be same');
+        return;
     }
     try{
         const requestData = {...data, confirmPassword: undefined}
@@ -42,15 +42,18 @@ const Register = (): JSX.Element => {
         console.log(responseData)
         authenticatedNavigation.replace('Home');
     }catch(error) {
+      console.log(error)
         Alert.alert('Registration failed');
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.inContainer} keyboardShouldPersistTaps='handled'>
       <Image source={require('../../../assets/logo.png')} style={styles.logo} />
-      <Text style={[TEXT_VARIANTS.heading2, styles.heading]}>Create Account</Text>
-
+      <View style={styles.headingContainer}>
+        <Text style={[TEXT_VARIANTS.heading1, commonStyles.textCenter, styles.heading]}>Create account</Text>
+        <Text style={[TEXT_VARIANTS.heading2, commonStyles.textCenter, styles.subHeading]}>Create an account, so you can explore the app</Text>
+      </View>
       <InputField
         containerStyle={styles.input}
         label="Full Name"
@@ -109,19 +112,17 @@ const Register = (): JSX.Element => {
             value === watch('password') || 'Passwords do not match',
         }}
       />
-    <View style={{ padding: 20 }}>
       <CustomButton
         title="Register"
-        onPress={() => console.log('Hello')}
+        onPress={handleSubmit(onSubmit)}
         style={styles.button}
       />
-      </View>
 
-      <Text style={[TEXT_VARIANTS.small, { marginTop: 16, textAlign: 'center' }]} >
+      <Text style={[TEXT_VARIANTS.small, { marginTop: 16, marginBottom: 30, textAlign: 'center' }]} >
         <Text style={TEXT_VARIANTS.small}>Already have an account? </Text>
         <Text style={commonStyles.link} onPress={() => navigation.replace('Login')}>Login here</Text>
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

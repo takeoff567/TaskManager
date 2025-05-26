@@ -12,6 +12,7 @@ const axiosClient = axios.create({
 // Request interceptor: attach access token
 axiosClient.interceptors.request.use(
     async (config) => {
+        console.log(config)
         const accessToken = await EncryptedStorage.getItem('accessToken');
         if(accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`

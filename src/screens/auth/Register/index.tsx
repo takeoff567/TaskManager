@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useState } from 'react';
 import { Text, View, Alert, Image, ScrollView } from 'react-native';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputField from '../../../components/InputField';
@@ -12,10 +12,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList, AuthStackParamList } from '../../../types';
 import {register} from '../../../services/authService';
 import storage from '../../../lib/storage';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { setupLoginUser } from '../../../store/slices/authSlice';
 
 const Register = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const authenticatedNavigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(false);
   const {
     control,
     handleSubmit,
@@ -31,19 +35,22 @@ const Register = (): JSX.Element => {
   });
 
   const onSubmit: SubmitHandler<RegisterForm> = async (data) => {
-    console.log('Alert')
     if(data.confirmPassword !== data.password){
         Alert.alert('Confirm password and password must be same');
         return;
     }
     try{
+        setLoading(true);
         const requestData = {...data, confirmPassword: undefined}
         const responseData = await register(requestData);
         console.log(responseData)
-        authenticatedNavigation.replace('Home');
+        dispatch(setupLoginUser(responseData));
+        // navigation.replace('Home');
     }catch(error) {
-      console.log(error)
+        console.log(error)
         Alert.alert('Registration failed');
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -59,6 +66,7 @@ const Register = (): JSX.Element => {
         label="Full Name"
         name="fullName"
         control={control}
+        editable={!loading}
         placeholder="Enter your full name"
         error={errors.fullName?.message}
         rules={{
@@ -71,6 +79,7 @@ const Register = (): JSX.Element => {
         label="Email"
         name="email"
         control={control}
+        editable={!loading}
         placeholder="Enter your email"
         keyboardType="email-address"
         autoCapitalize="none"
@@ -89,6 +98,7 @@ const Register = (): JSX.Element => {
         label="Password"
         name="password"
         control={control}
+        editable={!loading}
         placeholder="Enter your password"
         secureTextEntry
         error={errors.password?.message}
@@ -105,6 +115,7 @@ const Register = (): JSX.Element => {
         control={control}
         placeholder="Re-enter your password"
         secureTextEntry
+        editable={!loading}
         error={errors.confirmPassword?.message}
         rules={{
           required: { value: true, message: 'Please confirm your password' },
@@ -116,6 +127,7 @@ const Register = (): JSX.Element => {
         title="Register"
         onPress={handleSubmit(onSubmit)}
         style={styles.button}
+        loading={loading}
       />
 
       <Text style={[TEXT_VARIANTS.small, { marginTop: 16, marginBottom: 30, textAlign: 'center' }]} >

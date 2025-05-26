@@ -30,3 +30,10 @@ export type AuthStackParamList = {
       name?: string;
     };
   };
+
+  /**reducers */
+
+ export type AuthState = {
+    isLoggedIn: boolean;
+    loggedInUserInfo?: AuthResponse;
+}

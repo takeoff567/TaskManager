@@ -1,0 +1,128 @@
+import React, { JSX } from 'react';
+import { Text, View, Alert, Image } from 'react-native';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import InputField from '../../../components/InputField';
+import CustomButton from '../../../components/CustomButton';
+import { TEXT_VARIANTS } from '../../../constants';
+import { commonStyles } from '../../../styles/common';
+import styles from './style';
+import { RegisterForm } from './type';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList, AuthStackParamList } from '../../../types';
+import {register} from '../../../services/authService';
+import storage from '../../../lib/storage';
+
+const Register = (): JSX.Element => {
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const authenticatedNavigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RegisterForm>({
+    defaultValues: {
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const onSubmit: SubmitHandler<RegisterForm> = async (data) => {
+    console.log('Alert')
+    if(data.confirmPassword !== data.password){
+        // Alert.alert('Confirm password and password must be same');
+        // return;
+    }
+    try{
+        const requestData = {...data, confirmPassword: undefined}
+        const responseData = await register(requestData);
+        console.log(responseData)
+        authenticatedNavigation.replace('Home');
+    }catch(error) {
+        Alert.alert('Registration failed');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Image source={require('../../../assets/logo.png')} style={styles.logo} />
+      <Text style={[TEXT_VARIANTS.heading2, styles.heading]}>Create Account</Text>
+
+      <InputField
+        containerStyle={styles.input}
+        label="Full Name"
+        name="fullName"
+        control={control}
+        placeholder="Enter your full name"
+        error={errors.fullName?.message}
+        rules={{
+          required: { value: true, message: 'Full name is required' },
+        }}
+      />
+
+      <InputField
+        containerStyle={styles.input}
+        label="Email"
+        name="email"
+        control={control}
+        placeholder="Enter your email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        error={errors.email?.message}
+        rules={{
+          required: { value: true, message: 'Email is required' },
+          pattern: {
+            value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+            message: 'Enter a valid email address',
+          },
+        }}
+      />
+
+      <InputField
+        containerStyle={styles.input}
+        label="Password"
+        name="password"
+        control={control}
+        placeholder="Enter your password"
+        secureTextEntry
+        error={errors.password?.message}
+        rules={{
+          required: { value: true, message: 'Password is required' },
+          minLength: { value: 8, message: 'Minimum 8 characters required' },
+        }}
+      />
+
+      <InputField
+        containerStyle={styles.input}
+        label="Confirm Password"
+        name="confirmPassword"
+        control={control}
+        placeholder="Re-enter your password"
+        secureTextEntry
+        error={errors.confirmPassword?.message}
+        rules={{
+          required: { value: true, message: 'Please confirm your password' },
+          validate: (value) =>
+            value === watch('password') || 'Passwords do not match',
+        }}
+      />
+    <View style={{ padding: 20 }}>
+      <CustomButton
+        title="Register"
+        onPress={() => console.log('Hello')}
+        style={styles.button}
+      />
+      </View>
+
+      <Text style={[TEXT_VARIANTS.small, { marginTop: 16, textAlign: 'center' }]} >
+        <Text style={TEXT_VARIANTS.small}>Already have an account? </Text>
+        <Text style={commonStyles.link} onPress={() => navigation.replace('Login')}>Login here</Text>
+      </Text>
+    </View>
+  );
+};
+
+export default Register;

@@ -9,5 +9,10 @@ export const commonStyles = StyleSheet.create({
     },
     textCenter: {
         textAlign: 'center'
+    },
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center'
     }
 })

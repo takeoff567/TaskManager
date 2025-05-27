@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useState } from 'react';
 import { Text, View, Alert, Image, ScrollView } from 'react-native';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputField from '../../../components/InputField';
@@ -10,9 +10,14 @@ import { LoginForm } from './type';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../../types';
+import useAppDispatch from '../../../hooks/useAppDispatch';
+import { login } from '../../../services/authService';
+import { setupLoginUser } from '../../../store/slices/authSlice';
 
 const Login = (): JSX.Element => {
-    const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
+  const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
   const {
     control,
     handleSubmit,
@@ -24,8 +29,18 @@ const Login = (): JSX.Element => {
     },
   });
 
-  const onSubmit: SubmitHandler<LoginForm> = (data) => {
-    Alert.alert('Login Data', JSON.stringify(data, null, 2));
+  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+    try{
+            setLoading(true);
+            const requestData = {...data, confirmPassword: undefined}
+            const responseData = await login(requestData);
+            dispatch(setupLoginUser(responseData));
+        }catch(error) {
+            console.log(error)
+            Alert.alert('Registration failed');
+        }finally{
+          setLoading(false)
+        }
   };
 
   return (

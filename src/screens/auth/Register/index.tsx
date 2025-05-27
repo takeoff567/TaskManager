@@ -9,7 +9,7 @@ import styles from './style';
 import { RegisterForm } from './type';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AppStackParamList, AuthStackParamList } from '../../../types';
+import { AuthStackParamList } from '../../../types';
 import {register} from '../../../services/authService';
 import storage from '../../../lib/storage';
 import useAppDispatch from '../../../hooks/useAppDispatch';
@@ -17,7 +17,6 @@ import { setupLoginUser } from '../../../store/slices/authSlice';
 
 const Register = (): JSX.Element => {
   const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
-  const authenticatedNavigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const {
@@ -45,7 +44,6 @@ const Register = (): JSX.Element => {
         const responseData = await register(requestData);
         console.log(responseData)
         dispatch(setupLoginUser(responseData));
-        // navigation.replace('Home');
     }catch(error) {
         console.log(error)
         Alert.alert('Registration failed');
